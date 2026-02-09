@@ -4,7 +4,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('RecipeGenius loaded!');
     
-    // Get DOM elements
+    // Get DOM elements 
     const ingredientInput = document.getElementById('ingredientInput');
     const addIngredientBtn = document.getElementById('addIngredient');
     const ingredientsTags = document.getElementById('ingredientsTags');
