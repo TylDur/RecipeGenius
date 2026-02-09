@@ -1,6 +1,6 @@
 // RecipeGenius - JavaScript
 
-// Wait for DOM to be fully loaded
+// Waits for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('RecipeGenius loaded!');
     
