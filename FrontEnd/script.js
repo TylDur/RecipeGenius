@@ -1,10 +1,8 @@
-// RecipeGenius - JavaScript
-
-// Waits for DOM to be fully loaded
+// RecipeGenius Frontend - CLEAN VERSION
 document.addEventListener('DOMContentLoaded', function() {
     console.log('RecipeGenius loaded!');
     
-    // Get DOM elements 
+    // DOM Elements
     const ingredientInput = document.getElementById('ingredientInput');
     const addIngredientBtn = document.getElementById('addIngredient');
     const ingredientsTags = document.getElementById('ingredientsTags');
@@ -23,57 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Store ingredients
     let ingredients = [];
-    
-    // Sample recipes
-    const sampleRecipes = [
-        {
-            title: "Garlic Butter Chicken with Rice",
-            time: "30 minutes",
-            servings: "3-4 people",
-            difficulty: "Medium",
-            ingredients: [
-                "500g chicken breast, cubed",
-                "2 cups rice",
-                "3 cloves garlic, minced",
-                "2 tbsp butter",
-                "1 onion, chopped",
-                "1 cup chicken broth",
-                "Salt and pepper to taste",
-                "Fresh parsley for garnish"
-            ],
-            instructions: [
-                "Cook rice according to package instructions",
-                "Season chicken with salt and pepper",
-                "Heat butter in a large pan, add chicken and cook until golden",
-                "Add onion and garlic, cook until fragrant",
-                "Pour in chicken broth, simmer for 10 minutes",
-                "Serve chicken over rice, garnish with parsley"
-            ]
-        },
-        {
-            title: "Vegetable Stir Fry",
-            time: "20 minutes",
-            servings: "2-3 people",
-            difficulty: "Easy",
-            ingredients: [
-                "2 cups mixed vegetables (broccoli, bell peppers, carrots)",
-                "1 tbsp olive oil",
-                "2 cloves garlic, minced",
-                "1 tbsp soy sauce",
-                "1 tsp ginger, grated",
-                "1 tbsp honey",
-                "Sesame seeds for garnish"
-            ],
-            instructions: [
-                "Chop all vegetables into bite-sized pieces",
-                "Heat oil in a wok or large pan",
-                "Add garlic and ginger, stir for 30 seconds",
-                "Add vegetables and stir fry for 5-7 minutes",
-                "Mix in soy sauce and honey",
-                "Garnish with sesame seeds and serve hot"
-            ]
-        }
-    ];
     
     // Add ingredient function
     function addIngredient() {
@@ -94,7 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (ingredients.length === 0) {
             ingredientsTags.innerHTML = `
                 <span class="tag-sample">Example: chicken</span>
-                <span class="tag-sample">Example: tomatoes</span>
+                <span class="tag-sample">Example: rice</span>
+                <span class="tag-sample">Example: garlic</span>
             `;
             return;
         }
@@ -114,8 +62,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Generate recipe
-    function generateRecipe() {
+    // Generate recipe function
+    async function generateRecipe() {
+        console.log('Generate button clicked!');
+        
         if (ingredients.length === 0) {
             alert('Please add at least one ingredient!');
             ingredientInput.focus();
@@ -127,43 +77,83 @@ document.addEventListener('DOMContentLoaded', function() {
         recipeDisplay.style.display = 'none';
         loadingState.style.display = 'block';
         
-        // Simulate AI processing
-        setTimeout(() => {
-            const recipe = getGeneratedRecipe();
-            displayRecipe(recipe);
-            
-            loadingState.style.display = 'none';
-            recipeDisplay.style.display = 'block';
-        }, 1500);
-    }
-    
-    // Get generated recipe
-    function getGeneratedRecipe() {
-        const randomRecipe = sampleRecipes[Math.floor(Math.random() * sampleRecipes.length)];
-        
         // Get filter values
         const servings = document.getElementById('servings').value;
         const time = document.getElementById('cookingTime').value;
         const diet = document.getElementById('diet').value;
         const difficulty = document.getElementById('difficulty').value;
         
-        // Add user ingredients
-        const userIngredients = ingredients.map(ing => 
-            `${ing.charAt(0).toUpperCase() + ing.slice(1)} (from your kitchen)`
-        );
-        
-        return {
-            title: `${randomRecipe.title} with ${ingredients[0]}`,
-            time: time,
+        console.log('Sending to backend:', {
+            ingredients: ingredients,
             servings: servings,
-            difficulty: difficulty,
-            ingredients: [...userIngredients, ...randomRecipe.ingredients.slice(2)],
-            instructions: randomRecipe.instructions
-        };
+            time: time,
+            diet: diet,
+            difficulty: difficulty
+        });
+        
+        try {
+            // Call backend API
+            const response = await fetch('http://localhost:3000/api/generate-recipe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ingredients: ingredients,
+                    servings: servings,
+                    time: time,
+                    diet: diet,
+                    difficulty: difficulty
+                })
+            });
+            
+            console.log('Response status:', response.status);
+            
+            const data = await response.json();
+            console.log('Backend response:', data);
+            
+            if (data.success) {
+                displayRecipe(data.recipe);
+            } else {
+                throw new Error(data.error || 'Failed to generate recipe');
+            }
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error: ' + error.message);
+            
+            // Show fallback recipe
+            const fallbackRecipe = {
+                title: `Fallback Recipe with ${ingredients[0]}`,
+                time: '30 minutes',
+                servings: '2-4 people',
+                difficulty: 'Medium',
+                ingredients: [
+                    `${ingredients[0]}, fresh`,
+                    'Salt and pepper to taste',
+                    'Oil for cooking',
+                    'Garlic, minced'
+                ],
+                instructions: [
+                    `Prepare ${ingredients.join(', ')}`,
+                    'Cook according to your preferred method',
+                    'Season to taste',
+                    'Serve hot'
+                ]
+            };
+            
+            displayRecipe(fallbackRecipe);
+            
+        } finally {
+            loadingState.style.display = 'none';
+            recipeDisplay.style.display = 'block';
+        }
     }
     
-    // Display recipe
+    // Display recipe function
     function displayRecipe(recipe) {
+        console.log('Displaying recipe:', recipe);
+        
         recipeTitle.textContent = recipe.title;
         recipeTime.textContent = recipe.time;
         recipeServings.textContent = recipe.servings;
@@ -211,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Recipe action buttons
     document.getElementById('saveRecipe').addEventListener('click', function() {
-        alert('Recipe saved!');
+        alert('Recipe saved! (In a real app, this would save to your account)');
     });
     
     document.getElementById('generateNew').addEventListener('click', generateRecipe);
@@ -222,4 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize
     updateIngredientsDisplay();
+    
+    console.log('All event listeners set up!');
 });
