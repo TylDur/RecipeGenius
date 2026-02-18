@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RecipeGenius - AI Recipe Generator</title>
+    <!-- Loads CSS FIRST -->
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+     
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                <h1>RecipeGenius</h1>
+            </div>
+            <p class="tagline">AI-powered recipes from your ingredients</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="card">
+                    <h2><i class="fas fa-carrot"></i> What's in your kitchen?</h2>
+                    <div class="ingredients-input">
+                        <div class="input-group">
+                            <input type="text" id="ingredientInput" placeholder="e.g., chicken, tomatoes, rice...">
+                            <button id="addIngredient" class="btn-add">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        </div>
+                        <div class="tags-container" id="ingredientsTags">
+                            <span class="tag-sample">Example: chicken</span>
+                            <span class="tag-sample">Example: tomatoes</span>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="filters">
+                        <h3><i class="fas fa-filter"></i> Customize your recipe</h3>
+                        <div class="filter-grid">
+                            <div class="filter-group">
+                                <label><i class="fas fa-user-friends"></i> Servings</label>
+                                <select id="servings">
+                                    <option value="1-2 people">1-2 people</option>
+                                    <option value="3-4 people" selected>3-4 people</option>
+                                    <option value="5-6 people">5-6 people</option>
+                                    <option value="7+ people">7+ people</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fas fa-clock"></i> Time</label>
+                                <select id="cookingTime">
+                                    <option value="15 minutes">Under 15 min</option>
+                                    <option value="30 minutes">Under 30 min</option>
+                                    <option value="45 minutes" selected>Under 45 min</option>
+                                    <option value="any time">Any time</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fas fa-heart"></i> Diet</label>
+                                <select id="diet">
+                                    <option value="Any diet">Any diet</option>
+                                    <option value="Vegetarian">Vegetarian</option>
+                                    <option value="Vegan">Vegan</option>
+                                    <option value="Gluten-free">Gluten-free</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label><i class="fas fa-fire"></i> Difficulty</label>
+                                <select id="difficulty">
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium" selected>Medium</option>
+                                    <option value="Hard">Hard</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <div class="generate-section">
+                        <button id="generateRecipe" class="btn-generate">
+                            <i class="fas fa-magic"></i> Generate Recipe
+                        </button>
+                        <p class="helper-text">Add ingredients and click to generate</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Output Section -->
+            <section class="output-section">
+                <div class="card">
+                    <h2><i class="fas fa-robot"></i> Your AI-Generated Recipe</h2>
+                    <div class="recipe-placeholder" id="recipePlaceholder">
+                        <div class="placeholder-content">
+                            <i class="fas fa-utensil-spoon"></i>
+                            <h3>No recipe yet</h3>
+                            <p>Add ingredients and click "Generate Recipe"</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Recipe Display -->
+                    <div class="recipe-display" id="recipeDisplay" style="display: none;">
+                        <div class="recipe-header">
+                            <h3 id="recipeTitle"></h3>
+                            <div class="recipe-meta">
+                                <span><i class="fas fa-clock"></i> <span id="recipeTime"></span></span>
+                                <span><i class="fas fa-user-friends"></i> <span id="recipeServings"></span></span>
+                                <span><i class="fas fa-signal"></i> <span id="recipeDifficulty"></span></span>
+                            </div>
+                        </div>
+                        
+                        <div class="recipe-content">
+                            <div class="ingredients-list">
+                                <h4><i class="fas fa-list"></i> Ingredients</h4>
+                                <ul id="recipeIngredients"></ul>
+                            </div>
+                            
+                            <div class="instructions">
+                                <h4><i class="fas fa-list-ol"></i> Instructions</h4>
+                                <ol id="recipeInstructions"></ol>
+                            </div>
+                        </div>
+                        
+                        <div class="recipe-actions">
+                            <button id="saveRecipe" class="btn-secondary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button id="generateNew" class="btn-secondary">
+                                <i class="fas fa-redo"></i> Another
+                            </button>
+                            <button id="shareRecipe" class="btn-secondary">
+                                <i class="fas fa-share"></i> Share
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="loading-state" id="loadingState" style="display: none;">
+                        <div class="spinner"></div>
+                        <h3>AI is cooking...</h3>
+                        <p class="ai-thinking">Thinking of recipes...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sample Ingredients -->
+            <section class="samples-section">
+                <div class="card">
+                    <h3><i class="fas fa-lightbulb"></i> Quick Start</h3>
+                    <div class="sample-buttons">
+                        <button class="sample-btn" data-ingredients="chicken, rice, garlic">
+                            Chicken & Rice
+                        </button>
+                        <button class="sample-btn" data-ingredients="pasta, tomatoes">
+                            Simple Pasta
+                        </button>
+                        <button class="sample-btn" data-ingredients="eggs, potatoes">
+                            Breakfast
+                        </button>
+                        <button class="sample-btn" data-ingredients="beans, corn">
+                            Vegetarian
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Powered by AI • RecipeGenius</p>
+            <p class="disclaimer">Always check food safety</p>
+        </footer>
+    </div>
+
+    <!-- Load JavaScript LAST - AFTER HTML content -->
+    <script src="script.js"></script>
+</body>
+</html>

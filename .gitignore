@@ -1,0 +1,10 @@
+# Ignore environment variables
+.env
+Backend/.env
+
+# Ignore Node.js dependencies
+node_modules/
+Backend/node_modules/
+
+# Ignore system files
+.DS_Store
